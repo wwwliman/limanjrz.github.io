@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<title>书旗分类</title>
+	<script src="vue.js"></script>
+	<script src="vue-router.js"></script>
+	<script src="vue-resource.js"></script>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+			list-style: none;
+			text-decoration: none;
+		}
+
+		.T_cont{
+			position: fixed;
+			width: 100%;
+			line-height: 80px;
+			text-align: center;
+			font-size: 20px;
+			background-color: #fff;
+		}
+
+		.C_all_title{
+			padding: 10px;
+			background-color: #ccc;
+			color: #999;
+			font-size: 14px;
+		}
+
+		.C_all_title_cont{
+			padding: 0 10px;
+			cursor: pointer;
+		}
+
+		.C_all_title_cont2{
+			padding: 10px 0;
+			border-bottom: 1px solid #ccc;
+		}
+
+		.C_all_title_cont2_tt{
+			color: #000;
+		}
+
+		.C_all_title_cont2_b{
+			font-size: 14px;
+			color: #999;
+		}
+
+		.C_all_title_cont2_b span{
+			padding-right: 5px;
+		}
+
+		.N2_body{
+			display: flex;
+			border-top: 1px solid #ccc;
+			border-bottom: 1px solid #ccc;
+			padding: 10px 0;
+		}
+
+		.N2_body div{
+			padding:  0 20px;
+		}
+
+		.N2_name{
+			color: #00c98d;
+		}
+
+		.N2_body2{
+			padding: 0 2%;
+		}
+
+		.C{
+			overflow: hidden;
+			padding: 2% 0;
+			border-bottom: 1px solid #ccc;
+			cursor: pointer;
+		}
+
+		.C_img{
+			float: left;
+			width: 85px;
+			height: 120px;
+		}
+
+		.C_img img{
+			width: 100%;
+			height: 100%;
+		}
+
+		.C_cont{
+			margin-left: 100px;
+		}
+
+		.C_cont_tt{
+			margin-bottom: 6px;
+			color: #000;
+		}
+
+		.C_cont_aut{
+			font-size: 12px;
+			color: #999;
+			margin-bottom: 6px;
+		}
+
+		.C_cont_ct{
+			color: #999;
+			font-size: 12px;
+			line-height: 22px;
+			margin-bottom: 8px;
+		}
+
+		.C_cont_tags{
+			font-size: 12px;
+			color: #999;
+		}
+
+		.C_cont_tags span{
+			padding: 2px 8px;
+			border: 1px solid #ccc;
+			margin-right: 5px;
+		}
+	</style>
+</head>
+<body>
+	<div id="box">
+		<div class="T_cont">{{$route.params.type}}</div>
+		<router-view></router-view>
+	</div>
+
+	<template id="n1">
+		<div style="padding-top: 80px">
+			<div class="C_girl">
+				<p class="C_all_title">女生分类</p>
+				<div v-for="i in dt.girl" class="C_all_title_cont">
+					<div v-for="(ii, $key, $index) in i" class="C_all_title_cont2">
+						<a :href="'#/n2/'+$key+'/'+ii.cid+'/'+ii.relatedName">
+							<p class="C_all_title_cont2_tt">{{$key}}</p>
+							<div class="C_all_title_cont2_b">
+								<span v-for="iii in ii.list">{{iii}}</span>
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="C_boy">
+				<p class="C_all_title">男生分类</p>
+				<div v-for="i in dt.boy" class="C_all_title_cont">
+					<div v-for="(ii, $key, $index) in i" class="C_all_title_cont2">
+						<a :href="'#/n2/'+$key+'/'+ii.cid+'/'+ii.relatedName">
+							<p class="C_all_title_cont2_tt">{{$key}}</p>
+							<div class="C_all_title_cont2_b">
+								<span v-for="iii in ii.list">{{iii}}</span>
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</template>
+
+	<template id="n2">
+		<div style="padding-top: 80px">
+			<div class="N2_body">
+				<div class="N2_name">全部</div>
+				<div v-for='i in data.class'>{{i.name}}</div>
+				<div v-for='i in data.tag'>{{i.name}}</div>
+			</div>
+
+			<div class="N2_body2">
+				<div v-for="i in arr" class="C">
+					<div class="C_img"><img :src="i.cover"></div>
+					<div class="C_cont">
+						<div class="C_cont_tt">{{i.title}}</div>
+						<div class="C_cont_aut">{{i.author}}</div>
+						<div class="C_cont_ct">{{i.desc}}</div>
+						<div class="C_cont_tags">
+							<span v-for="j in i.tags.split(',')">{{j}}</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</template>
+</body>
+</html>
+<script type="text/javascript">
+	var router = new VueRouter({
+		routes:[{
+			path: '/',
+			redirect: '/n1/分类'
+		},{
+			path: '/n1/:type',
+			component:{
+				template: '#n1',
+				data(){
+					return {
+						dt:''
+					}
+				},
+				created(){
+					this.$http.post('http://walden1.shuqireader.com/webapi/rank/classrelation?_=1571217539678',{
+						type: 1,
+						timestamp: 1571217539676,
+						sign: 'a062d47377204af0223a0dec4d8aec59',
+						shuqi_h5: '',
+					},{emulateJSON:true}).then(data=>{
+						// console.log(data.data.data)
+						this.dt = data.data.data;
+					})
+				}
+			}
+		},{
+			path: '/n2/:type/:uid/:name',
+			component:{
+				template: '#n2',
+				data(){
+					return {
+						data: '',
+						arr:''
+					}
+				},
+				created(){
+					var uid = this.$route.params.uid;
+					var name = this.$route.params.name;
+
+					this.$http.post('http://walden1.shuqireader.com/webapi/rank/classrelation?_=1571220235971',{
+						type: 2,
+						cid: uid,
+						timestamp: 1571220235968,
+						sign: '4e97b9d8142361752e1e4fb5c0b48134',
+						shuqi_h5: '',
+					},{emulateJSON:true}).then(data=>{
+						this.data = data.data.data;
+					})
+
+					this.$http.get('http://read.xiaoshuo1-sm.com/novel/i.php?do=is_caterank&p=1&page=1&words=&shuqi_h5=&onlyCpBooks=1&secondCate=%E7%8E%B0%E4%BB%A3%E8%A8%80%E6%83%85&sort=monthHot&_=1571222214835',{
+						params:{
+							do: 'is_caterank',
+							p: 1,
+							page: 1,
+							words: '',
+							shuqi_h5: '',
+							onlyCpBooks: 1,
+							secondCate: name,
+							sort: 'monthHot',
+							_: 1571222214835,
+						}
+					}).then(data=>{
+						// console.log(data.data.data)
+						this.arr = data.data.data
+					})
+				}
+			}
+		}]
+	})
+
+	new Vue({
+		el: '#box',
+		router,
+	})
+</script>
